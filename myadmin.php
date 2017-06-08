@@ -5,7 +5,7 @@
  - add way to call/hook into install/uninstall
 */
 return [
-	'name' => 'MyAdmin Domain Registrations Module for MyAdmin',
+	'name' => 'Domain Registrations Module',
 	'description' => 'Allows selling of Domain Registrations Module',
 	'help' => '',
 	'module' => 'domains',
