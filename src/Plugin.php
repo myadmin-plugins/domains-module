@@ -18,8 +18,8 @@ class Plugin {
 
 	public static function Hooks() {
 		return [
-			'domains.load_processing' => ['Detain\MyAdminDomains\Plugin', 'Load'],
-			'domains.settings' => ['Detain\MyAdminDomains\Plugin', 'Settings'],
+			'domains.load_processing' => [__CLASS__, 'Load'],
+			'domains.settings' => [__CLASS__, 'Settings'],
 		];
 	}
 
