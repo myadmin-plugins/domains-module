@@ -16,7 +16,7 @@ class Plugin {
 	public function __construct() {
 	}
 
-	public static function Hooks() {
+	public static function getHooks() {
 		return [
 			'domains.load_processing' => [__CLASS__, 'Load'],
 			'domains.settings' => [__CLASS__, 'Settings'],
