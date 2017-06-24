@@ -18,12 +18,12 @@ class Plugin {
 
 	public static function getHooks() {
 		return [
-			'domains.load_processing' => [__CLASS__, 'Load'],
+			'domains.load_processing' => [__CLASS__, 'loadProcessing'],
 			'domains.settings' => [__CLASS__, 'getSettings'],
 		];
 	}
 
-	public static function Load(GenericEvent $event) {
+	public static function loadProcessing(GenericEvent $event) {
 
 	}
 
