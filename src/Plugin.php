@@ -46,6 +46,6 @@ class Plugin {
 
 	public static function getSettings(GenericEvent $event) {
 		$settings = $event->getSubject();
-		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_domains', 'Out Of Stock Domains', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_DOMAINS'), array('0', '1'), array('No', 'Yes', ));
+		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_domains', 'Out Of Stock Domains', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_DOMAINS'), array('0', '1'), array('No', 'Yes'));
 	}
 }
