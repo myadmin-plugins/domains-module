@@ -46,7 +46,7 @@ class Plugin {
 	public static function getHooks() {
 		return [
 			self::$module.'.load_processing' => [__CLASS__, 'loadProcessing'],
-			self::$module.'.settings' => [__CLASS__, 'getSettings'],
+			self::$module.'.settings' => [__CLASS__, 'getSettings']
 		];
 	}
 
