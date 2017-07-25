@@ -56,6 +56,7 @@ class Plugin {
 	public static function loadProcessing(GenericEvent $event) {
 		$service = $event->getSubject();
 		$service->setModule(self::$module)
+			->setActivationStatuses(['pending', 'pendapproval', 'active'])
 			->set_enable(function($service) {
 				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
 				$serviceInfo = $service->getServiceInfo();
