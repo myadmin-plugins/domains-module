@@ -1,33 +1,40 @@
 {
-    "name": "detain/myadmin-domains-module",
+    "name": "detain\/myadmin-domains-module",
     "type": "myadmin-plugin",
     "description": "Domain Registrations Module for MyAdmin",
-    "keywords": ["domains","administration","license"],
+    "keywords": [
+        "domains",
+        "administration",
+        "license"
+    ],
     "license": "LGPL-2.1",
     "authors": [
         {
             "name": "Joe Huss",
-            "homepage": "https://my.interserver.net/"
+            "homepage": "https:\/\/my.interserver.net\/"
         }
     ],
     "config": {
-        "bin-dir": "vendor/bin",
+        "bin-dir": "vendor\/bin",
         "minimum-stability": "dev"
     },
     "require": {
         "php": ">=5.0.0",
         "ext-soap": "*",
-    "symfony/event-dispatcher": "*",
-    "detain/myadmin-plugin-installer": "dev-master"
+        "symfony\/event-dispatcher": "*",
+        "detain\/myadmin-plugin-installer": "dev-master",
+        "roave\/security-advisories": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
-        "vlucas/phpdotenv": "*",
-        "codeclimate/php-test-reporter": "dev-master",
-        "satooshi/php-coveralls": "*",
-        "codacy/coverage": "dev-master"
+        "phpunit\/phpunit": "*",
+        "vlucas\/phpdotenv": "*",
+        "codeclimate\/php-test-reporter": "dev-master",
+        "satooshi\/php-coveralls": "*",
+        "codacy\/coverage": "dev-master"
     },
     "autoload": {
-        "psr-4": {"Detain\\MyAdminDomains\\": "src/"}
+        "psr-4": {
+            "Detain\\MyAdminDomains\\": "src\/"
+        }
     }
 }
