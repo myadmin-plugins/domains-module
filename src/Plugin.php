@@ -67,13 +67,13 @@ class Plugin {
 				$smarty = new \TFSmarty;
 				$smarty->assign('domain_hostname', $serviceInfo[$settings['PREFIX'].'_hostname']);
 				$smarty->assign('domain_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
-				$email = $smarty->fetch('email/admin_email_domain_created.tpl');
+				$email = $smarty->fetch('email/admin/domain_created.tpl');
 				$subject = 'New Domain Created '.$db->Record[$settings['TITLE_FIELD']];
 				$headers = '';
 				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
 				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
-				admin_mail($subject, $email, $headers, FALSE, 'admin_email_domain_created.tpl');
+				admin_mail($subject, $email, $headers, FALSE, 'admin/domain_created.tpl');
 			})->setReactivate(function($service) {
 				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
 				$serviceInfo = $service->getServiceInfo();
@@ -84,13 +84,13 @@ class Plugin {
 				$smarty = new \TFSmarty;
 				$smarty->assign('domain_hostname', $serviceInfo[$settings['PREFIX'].'_hostname']);
 				$smarty->assign('domain_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
-				$email = $smarty->fetch('email/admin_email_domain_reactivated.tpl');
+				$email = $smarty->fetch('email/admin/domain_reactivated.tpl');
 				$subject = $db->Record[$settings['TITLE_FIELD']].' '.$service_name.' '.$settings['TBLNAME'].' Re-Activated';
 				$headers = '';
 				$headers .= 'MIME-Version: 1.0'.EMAIL_NEWLINE;
 				$headers .= 'Content-type: text/html; charset=UTF-8'.EMAIL_NEWLINE;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.EMAIL_NEWLINE;
-				admin_mail($subject, $email, $headers, FALSE, 'admin_email_domain_reactivated.tpl');
+				admin_mail($subject, $email, $headers, FALSE, 'admin/domain_reactivated.tpl');
 			})->setDisable(function() {
 			})->register();
 	}
