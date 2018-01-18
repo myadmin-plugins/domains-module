@@ -24,5 +24,5 @@ composer require detain/myadmin-domains-module
 
 ## License
 
-The Domain Registrations Module for MyAdmin class is licensed under the LGPL-v2 license.
+The Domain Registrations Module for MyAdmin class is licensed under the LGPL-v2.1 license.
 
