@@ -54,6 +54,9 @@ class Plugin {
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
 	public static function loadProcessing(GenericEvent $event) {
+		/**
+		 * @var \ServiceHandler $service
+		 */
 		$service = $event->getSubject();
 		$service->setModule(self::$module)
 			->setActivationStatuses(['pending', 'pendapproval', 'active'])
