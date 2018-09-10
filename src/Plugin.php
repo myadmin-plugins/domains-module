@@ -9,8 +9,8 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  *
  * @package Detain\MyAdminDomains
  */
-class Plugin {
-
+class Plugin
+{
 	public static $name = 'Domain Registrations';
 	public static $description = 'Allows selling of Domain Registrations Module';
 	public static $help = '';
@@ -18,8 +18,8 @@ class Plugin {
 	public static $type = 'module';
 	public static $settings = [
 		'SERVICE_ID_OFFSET' => 10000,
-		'USE_REPEAT_INVOICE' => TRUE,
-		'USE_PACKAGES' => TRUE,
+		'USE_REPEAT_INVOICE' => true,
+		'USE_PACKAGES' => true,
 		'BILLING_DAYS_OFFSET' => 45,
 		'IMGNAME' => 'domain.png',
 		'REPEAT_BILLING_METHOD' => PRORATE_BILLING,
@@ -37,13 +37,15 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 	}
 
 	/**
 	 * @return array
 	 */
-	public static function getHooks() {
+	public static function getHooks()
+	{
 		return [
 			self::$module.'.load_processing' => [__CLASS__, 'loadProcessing'],
 			self::$module.'.settings' => [__CLASS__, 'getSettings']
@@ -53,15 +55,16 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function loadProcessing(GenericEvent $event) {
+	public static function loadProcessing(GenericEvent $event)
+	{
 		/**
 		 * @var \ServiceHandler $service
 		 */
 		$service = $event->getSubject();
 		$service->setModule(self::$module)
 			->setActivationStatuses(['pending', 'pendapproval', 'active'])
-			->setEnable(function($service) {
-				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
+			->setEnable(function ($service) {
+				$serviceTypes = run_event('get_service_types', false, self::$module);
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
 				$db = get_module_db(self::$module);
@@ -76,9 +79,9 @@ class Plugin {
 				$headers .= 'MIME-Version: 1.0'.PHP_EOL;
 				$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
-				admin_mail($subject, $email, $headers, FALSE, 'admin/domain_created.tpl');
-			})->setReactivate(function($service) {
-				$serviceTypes = run_event('get_service_types', FALSE, self::$module);
+				admin_mail($subject, $email, $headers, false, 'admin/domain_created.tpl');
+			})->setReactivate(function ($service) {
+				$serviceTypes = run_event('get_service_types', false, self::$module);
 				$serviceInfo = $service->getServiceInfo();
 				$settings = get_module_settings(self::$module);
 				$db = get_module_db(self::$module);
@@ -93,15 +96,16 @@ class Plugin {
 				$headers .= 'MIME-Version: 1.0'.PHP_EOL;
 				$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
-				admin_mail($subject, $email, $headers, FALSE, 'admin/domain_reactivated.tpl');
-			})->setDisable(function() {
+				admin_mail($subject, $email, $headers, false, 'admin/domain_reactivated.tpl');
+			})->setDisable(function () {
 			})->register();
 	}
 
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getSettings(GenericEvent $event) {
+	public static function getSettings(GenericEvent $event)
+	{
 		$settings = $event->getSubject();
 		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_domains', 'Out Of Stock Domains', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_DOMAINS'), ['0', '1'], ['No', 'Yes']);
 	}
