@@ -1,5 +1,5 @@
 {
-	"name": "detain/myadmin-domains-module",
+	"name": "detain/domains-module",
 	"type": "myadmin-plugin",
 	"description": "Domain Registrations Module for MyAdmin",
 	"keywords": [
