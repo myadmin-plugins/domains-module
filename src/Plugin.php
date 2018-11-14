@@ -104,9 +104,12 @@ class Plugin
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getSettings(GenericEvent $event)
-	{
-		$settings = $event->getSubject();
-		$settings->add_dropdown_setting(self::$module, 'General', 'outofstock_domains', 'Out Of Stock Domains', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_DOMAINS'), ['0', '1'], ['No', 'Yes']);
+    public static function getSettings(GenericEvent $event)
+    {
+        /**
+         * @var \MyAdmin\Settings $settings
+         **/
+        $settings = $event->getSubject();
+		$settings->add_dropdown_setting(self::$module, __('General'), 'outofstock_domains', __('Out Of Stock Domains'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_DOMAINS'), ['0', '1'], ['No', 'Yes']);
 	}
 }
