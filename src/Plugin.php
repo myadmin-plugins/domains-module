@@ -110,6 +110,6 @@ class Plugin
          * @var \MyAdmin\Settings $settings
          **/
         $settings = $event->getSubject();
-		$settings->add_dropdown_setting(self::$module, __('General'), 'outofstock_domains', __('Out Of Stock Domains'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_DOMAINS'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_dropdown_setting(self::$module, _('General'), 'outofstock_domains', _('Out Of Stock Domains'), _('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_DOMAINS'), ['0', '1'], ['No', 'Yes']);
 	}
 }
