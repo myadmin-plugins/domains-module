@@ -80,11 +80,6 @@ class Plugin
 				$headers .= 'Content-type: text/html; charset=UTF-8'.PHP_EOL;
 				$headers .= 'From: '.TITLE.' <'.EMAIL_FROM.'>'.PHP_EOL;
 				admin_mail($subject, $email, $headers, false, 'admin/domain_created.tpl');
-                $db->query("select * from queue_log where history_section='".self::$module."order' and history_type='{$serviceInfo[$settings['PREFIX'].'_id']}' and history_new_value=0");
-                if ($db->num_rows() > 0) {
-                    $db->next_record(MYSQL_ASSOC);
-                    $db->query("update queue_log set history_new_value=1 where history_id='{$db->Record['history_id']}'");
-                }
 			})->setReactivate(function ($service) {
 				$serviceTypes = run_event('get_service_types', false, self::$module);
 				$serviceInfo = $service->getServiceInfo();
