@@ -75,7 +75,7 @@ class Plugin
 				$smarty->assign('domain_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
 				$email = $smarty->fetch('email/admin/domain_created.tpl');
 				$subject = 'New Domain Created '.$serviceInfo[$settings['TITLE_FIELD']];
-				(new MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/domain_created.tpl');
+				(new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/domain_created.tpl');
 			})->setReactivate(function ($service) {
 				$serviceTypes = run_event('get_service_types', false, self::$module);
 				$serviceInfo = $service->getServiceInfo();
@@ -88,7 +88,7 @@ class Plugin
 				$smarty->assign('domain_name', $serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name']);
 				$email = $smarty->fetch('email/admin/domain_reactivated.tpl');
 				$subject = $serviceInfo[$settings['TITLE_FIELD']].' '.$serviceTypes[$serviceInfo[$settings['PREFIX'].'_type']]['services_name'].' '.$settings['TBLNAME'].' Reactivated';
-				(new MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/domain_reactivated.tpl');
+				(new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/domain_reactivated.tpl');
 			})->setDisable(function () {
 			})->register();
 	}
