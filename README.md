@@ -1,28 +1,41 @@
 # Domain Registrations Module for MyAdmin
 
-Domain Registrations Module for MyAdmin
+[![Tests](https://github.com/detain/myadmin-domains-module/actions/workflows/tests.yml/badge.svg)](https://github.com/detain/myadmin-domains-module/actions/workflows/tests.yml)
+[![Latest Stable Version](https://poser.pugx.org/detain/myadmin-domains-module/version)](https://packagist.org/packages/detain/myadmin-domains-module)
+[![Total Downloads](https://poser.pugx.org/detain/myadmin-domains-module/downloads)](https://packagist.org/packages/detain/myadmin-domains-module)
+[![License](https://poser.pugx.org/detain/myadmin-domains-module/license)](https://packagist.org/packages/detain/myadmin-domains-module)
 
-## Build Status and Code Analysis
+A MyAdmin plugin module that provides domain registration management capabilities. It integrates with the MyAdmin service lifecycle to handle domain provisioning, activation, reactivation, and suspension through the Symfony EventDispatcher system.
 
-Site          | Status
---------------|---------------------------
-![Travis-CI](http://i.is.cc/storage/GYd75qN.png "Travis-CI")     | [![Build Status](https://travis-ci.org/detain/myadmin-domains-module.svg?branch=master)](https://travis-ci.org/detain/myadmin-domains-module)
-![CodeClimate](http://i.is.cc/storage/GYlageh.png "CodeClimate")  | [![Code Climate](https://codeclimate.com/github/detain/myadmin-domains-module/badges/gpa.svg)](https://codeclimate.com/github/detain/myadmin-domains-module) [![Test Coverage](https://codeclimate.com/github/detain/myadmin-domains-module/badges/coverage.svg)](https://codeclimate.com/github/detain/myadmin-domains-module/coverage) [![Issue Count](https://codeclimate.com/github/detain/myadmin-domains-module/badges/issue_count.svg)](https://codeclimate.com/github/detain/myadmin-domains-module)
-![Scrutinizer](http://i.is.cc/storage/GYeUnux.png "Scrutinizer")   | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/myadmin-plugins/domains-module/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/myadmin-plugins/domains-module/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/myadmin-plugins/domains-module/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/myadmin-plugins/domains-module/?branch=master) [![Build Status](https://scrutinizer-ci.com/g/myadmin-plugins/domains-module/badges/build.png?b=master)](https://scrutinizer-ci.com/g/myadmin-plugins/domains-module/build-status/master)
-![Codacy](http://i.is.cc/storage/GYi66Cx.png "Codacy")        | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/226251fc068f4fd5b4b4ef9a40011d06)](https://www.codacy.com/app/detain/myadmin-domains-module) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/25fa74eb74c947bf969602fcfe87e349)](https://www.codacy.com/app/detain/myadmin-domains-module?utm_source=github.com&utm_medium=referral&utm_content=detain/myadmin-domains-module&utm_campaign=Badge_Coverage)
-![Coveralls](http://i.is.cc/storage/GYjNSim.png "Coveralls")    | [![Coverage Status](https://coveralls.io/repos/github/detain/db_abstraction/badge.svg?branch=master)](https://coveralls.io/github/detain/myadmin-domains-module?branch=master)
-![Packagist](http://i.is.cc/storage/GYacBEX.png "Packagist")     | [![Latest Stable Version](https://poser.pugx.org/detain/myadmin-domains-module/version)](https://packagist.org/packages/detain/myadmin-domains-module) [![Total Downloads](https://poser.pugx.org/detain/myadmin-domains-module/downloads)](https://packagist.org/packages/detain/myadmin-domains-module) [![Latest Unstable Version](https://poser.pugx.org/detain/myadmin-domains-module/v/unstable)](//packagist.org/packages/detain/myadmin-domains-module) [![Monthly Downloads](https://poser.pugx.org/detain/myadmin-domains-module/d/monthly)](https://packagist.org/packages/detain/myadmin-domains-module) [![Daily Downloads](https://poser.pugx.org/detain/myadmin-domains-module/d/daily)](https://packagist.org/packages/detain/myadmin-domains-module) [![License](https://poser.pugx.org/detain/myadmin-domains-module/license)](https://packagist.org/packages/detain/myadmin-domains-module)
+## Features
 
+- Domain registration service lifecycle management (enable, reactivate, disable)
+- Configurable billing with prorate support and customizable day offsets
+- Automated email notifications for domain creation and reactivation events
+- Admin settings panel with out-of-stock toggle for controlling domain sales
+- Event-driven architecture using Symfony EventDispatcher hooks
 
 ## Installation
 
-Install with composer like
+Install with Composer:
 
 ```sh
 composer require detain/myadmin-domains-module
 ```
 
+## Configuration
+
+The module provides configurable settings through the `Plugin::$settings` array including service ID offsets, billing parameters, suspension thresholds, and database table mappings.
+
+## Testing
+
+Run the test suite with PHPUnit:
+
+```sh
+composer install
+vendor/bin/phpunit
+```
+
 ## License
 
-The Domain Registrations Module for MyAdmin class is licensed under the LGPL-v2.1 license.
-
+The Domain Registrations Module for MyAdmin is licensed under the LGPL-v2.1 license.
