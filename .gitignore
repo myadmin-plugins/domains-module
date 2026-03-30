@@ -4,3 +4,6 @@ vendor/
 .idea/workspace.xml
 .idea/libraries
 .phpunit.result.cache
+
+# Caliber local state
+.caliber/
