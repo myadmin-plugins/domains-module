@@ -10,7 +10,7 @@ use ReflectionMethod;
  * Tests for the Detain\MyAdminDomains\Plugin class.
  *
  * Because the Plugin class is tightly coupled to a large MyAdmin framework
- * (global functions, $GLOBALS['tf'], database access, Smarty templates, etc.),
+ * (global functions, MyAdmin\App::tf(), database access, Smarty templates, etc.),
  * we focus on testing what can be verified without that runtime:
  *   - Class structure via ReflectionClass
  *   - Static property values (constants / config)
