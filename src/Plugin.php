@@ -77,6 +77,13 @@ class Plugin
                 $subject = 'New Domain Created '.$serviceInfo[$settings['TITLE_FIELD']];
                 (new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/domain_created.tpl');
             })->setReactivate(function ($service) {
+                $serviceInfo = $service->getServiceInfo();
+                $settings = get_module_settings(self::$module);
+                if (method_exists($service, 'getSuccess') && $service->getSuccess() === false) {
+                    myadmin_log(self::$module, 'warning', 'Skipping domain reactivation finalize - registrar renewal did not succeed', __LINE__, __FILE__);
+                    (new \MyAdmin\Mail())->adminMail('Error Reactivating '.$settings['TBLNAME'].' '.$serviceInfo[$settings['PREFIX'].'_id'], 'There was an error reactivating/renewing the '.$settings['TBLNAME'].' '.$serviceInfo[$settings['TITLE_FIELD']].'.  The registrar renewal did not succeed.  Please look into it and fix.', false, 'admin/setup_error.tpl');
+                    return;
+                }
                 $serviceTypes = run_event('get_service_types', false, self::$module);
                 $serviceInfo = $service->getServiceInfo();
                 $settings = get_module_settings(self::$module);
