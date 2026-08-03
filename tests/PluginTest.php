@@ -2,21 +2,30 @@
 
 namespace Detain\MyAdminDomains\Tests;
 
+use Detain\MyAdminDomains\Plugin;
+use Detain\MyAdminDomains\Tests\Support\DbSpy;
+use Detain\MyAdminDomains\Tests\Support\HistorySpy;
+use Detain\MyAdminDomains\Tests\Support\LogSpy;
+use Detain\MyAdminDomains\Tests\Support\ServiceHandlerSpy;
+use MyAdmin\App;
+use MyAdmin\Mail;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Tests for the Detain\MyAdminDomains\Plugin class.
  *
- * Because the Plugin class is tightly coupled to a large MyAdmin framework
- * (global functions, MyAdmin\App::tf(), database access, Smarty templates, etc.),
- * we focus on testing what can be verified without that runtime:
+ * The Plugin class is tightly coupled to a large MyAdmin framework (global
+ * functions, MyAdmin\App, database access, Smarty templates, etc.), so the
+ * lifecycle closures it registers are driven against framework test doubles
+ * installed by tests/bootstrap.php. That covers:
  *   - Class structure via ReflectionClass
  *   - Static property values (constants / config)
  *   - Pure-logic method: getHooks()
  *   - Method signatures for event handlers
- *   - Source-level checks via file_get_contents for patterns
+ *   - Behaviour of the enable/reactivate lifecycle closures
  */
 class PluginTest extends TestCase
 {
@@ -30,10 +39,52 @@ class PluginTest extends TestCase
      */
     private $sourceFile;
 
+    /**
+     * Fresh history spy installed on the \MyAdmin\App facade for each test.
+     *
+     * @var HistorySpy
+     */
+    private $history;
+
     protected function setUp(): void
     {
         $this->reflection = new ReflectionClass(\Detain\MyAdminDomains\Plugin::class);
         $this->sourceFile = dirname(__DIR__) . '/src/Plugin.php';
+        $this->resetFrameworkSpies();
+    }
+
+    /**
+     * Clears the framework spies so each recorded effect belongs to the call
+     * under test.
+     *
+     * @return void
+     */
+    private function resetFrameworkSpies(): void
+    {
+        $this->history = App::resetHistory();
+        Mail::reset();
+        DbSpy::reset();
+        LogSpy::reset();
+    }
+
+    /**
+     * Runs Plugin::loadProcessing() against a ServiceHandler spy carrying a
+     * representative domains row, and returns the spy.
+     *
+     * @return ServiceHandlerSpy
+     */
+    private function registerLifecycleCallbacks(): ServiceHandlerSpy
+    {
+        $handler = new ServiceHandlerSpy();
+        $handler->setServiceInfo([
+            'domain_id' => 8125,
+            'domain_custid' => 3311,
+            'domain_hostname' => 'example.com',
+            'domain_type' => 17,
+            'domain_status' => 'pending',
+        ]);
+        Plugin::loadProcessing(new GenericEvent($handler));
+        return $handler;
     }
 
     // ------------------------------------------------------------------
@@ -699,15 +750,103 @@ class PluginTest extends TestCase
     }
 
     /**
-     * Tests that the source references the history tracking mechanism.
+     * Tests that the enable closure records the status change in history.
      *
-     * Status changes are logged via the history add method.
+     * This drives the closure the plugin registers and asserts what it
+     * actually recorded. The previous version grepped src/Plugin.php for
+     * "history->add(" and "change_status", so it broke the moment the history
+     * call moved from $GLOBALS['tf']->history->add() to the
+     * \MyAdmin\App::history() facade, even though the behaviour was identical.
      */
-    public function testSourceReferencesHistoryTracking(): void
+    public function testEnableRecordsStatusChangeInHistory(): void
     {
-        $source = file_get_contents($this->sourceFile);
-        $this->assertStringContainsString('history->add(', $source);
-        $this->assertStringContainsString('change_status', $source);
+        $handler = $this->registerLifecycleCallbacks();
+        $handler->run('enable');
+
+        $this->assertCount(1, $this->history->entries, 'enable should record exactly one history entry');
+        $entry = $this->history->entries[0];
+        $this->assertSame('domains', $entry['section'], 'the entry must be filed under the domains table');
+        $this->assertSame('change_status', $entry['type']);
+        $this->assertSame('active', $entry['new'], 'enable must record the new active status');
+        $this->assertSame(8125, $entry['old'], 'the entry must reference the domain id');
+        $this->assertSame(3311, $entry['custid'], 'the entry must be attributed to the domain owner');
+    }
+
+    /**
+     * Tests that the reactivate closure records the status change in history
+     * once the registrar renewal has succeeded.
+     */
+    public function testReactivateRecordsStatusChangeInHistory(): void
+    {
+        $handler = $this->registerLifecycleCallbacks();
+        $handler->setSuccess(true);
+        $handler->run('reactivate');
+
+        $this->assertCount(1, $this->history->entries, 'reactivate should record exactly one history entry');
+        $entry = $this->history->entries[0];
+        $this->assertSame('domains', $entry['section']);
+        $this->assertSame('change_status', $entry['type']);
+        $this->assertSame('active', $entry['new']);
+        $this->assertSame(8125, $entry['old']);
+        $this->assertSame(3311, $entry['custid']);
+    }
+
+    /**
+     * Tests that reactivate refuses to finalize when the registrar renewal
+     * failed: no status flip, no history entry, and the admins get told.
+     */
+    public function testReactivateSkipsFinalizeWhenRegistrarRenewalFailed(): void
+    {
+        $handler = $this->registerLifecycleCallbacks();
+        $handler->setSuccess(false);
+        $handler->run('reactivate');
+
+        $this->assertSame([], $this->history->entries, 'a failed renewal must not be recorded as an activation');
+        $this->assertSame([], DbSpy::$queries, 'a failed renewal must not flip the domain to active');
+
+        $this->assertCount(1, Mail::$sent, 'a failed renewal must raise exactly one admin notification');
+        $this->assertSame('admin/setup_error.tpl', Mail::$sent[0]['template']);
+        $this->assertStringContainsString('Error Reactivating', Mail::$sent[0]['subject']);
+
+        $logged = LogSpy::calls();
+        $this->assertCount(1, $logged, 'a failed renewal must be logged once');
+        $this->assertSame('warning', $logged[0]['level']);
+        $this->assertStringContainsString('registrar renewal did not succeed', $logged[0]['message']);
+    }
+
+    /**
+     * Tests that the enable and reactivate closures flip the domain row to
+     * active and notify the admins, alongside the history entry.
+     */
+    public function testEnableAndReactivateActivateTheRowAndNotifyAdmins(): void
+    {
+        foreach (['enable' => 'domain_created.tpl', 'reactivate' => 'domain_reactivated.tpl'] as $callback => $template) {
+            $this->resetFrameworkSpies();
+            $handler = $this->registerLifecycleCallbacks();
+            $handler->run($callback);
+
+            $this->assertCount(1, DbSpy::$queries, $callback . ' should issue exactly one query');
+            $this->assertStringContainsString("update domains set domain_status='active'", DbSpy::$queries[0]);
+            $this->assertStringContainsString("domain_id='8125'", DbSpy::$queries[0]);
+
+            $this->assertCount(1, Mail::$sent, $callback . ' should send exactly one admin notification');
+            $this->assertSame('admin/' . $template, Mail::$sent[0]['template']);
+            $this->assertSame('rendered:email/admin/' . $template, Mail::$sent[0]['email']);
+        }
+    }
+
+    /**
+     * Tests that loadProcessing wires the module name, activation statuses and
+     * lifecycle closures onto the ServiceHandler and registers it.
+     */
+    public function testLoadProcessingRegistersLifecycleCallbacks(): void
+    {
+        $handler = $this->registerLifecycleCallbacks();
+
+        $this->assertSame('domains', $handler->module);
+        $this->assertSame(['pending', 'pendapproval', 'active'], $handler->activationStatuses);
+        $this->assertTrue($handler->registered, 'loadProcessing must call register()');
+        $this->assertSame(['enable', 'reactivate', 'disable'], array_keys($handler->callbacks));
     }
 
     /**
