@@ -76,6 +76,11 @@ class Plugin
                 $email = $smarty->fetch('email/admin/domain_created.tpl');
                 $subject = 'New Domain Created '.$serviceInfo[$settings['TITLE_FIELD']];
                 (new \MyAdmin\Mail())->adminMail($subject, $email, false, 'admin/domain_created.tpl');
+                //Create dns in dns manager to point to parking ip
+                $ip = '192.64.81.209';
+                function_requirements('add_dns_domain');
+                $result = add_dns_domain($serviceInfo[$settings['PREFIX'].'_hostname'], $ip);
+                myadmin_log('dns', 'debug', "add_dns_domain({$serviceInfo[$settings['PREFIX'].'_hostname']}, $ip) = " . json_encode($result), __LINE__, __FILE__);
             })->setReactivate(function ($service) {
                 $serviceInfo = $service->getServiceInfo();
                 $settings = get_module_settings(self::$module);
