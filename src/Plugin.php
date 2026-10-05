@@ -79,8 +79,8 @@ class Plugin
                 //Create dns in dns manager to point to parking ip
                 $ip = '192.64.81.209';
                 function_requirements('add_dns_domain');
-                $result = add_dns_domain($serviceInfo[$settings['PREFIX'].'_hostname'], $ip);
-                myadmin_log('dns', 'debug', "add_dns_domain({$serviceInfo[$settings['PREFIX'].'_hostname']}, $ip) = " . json_encode($result), __LINE__, __FILE__);
+                $result = add_dns_domain($serviceInfo[$settings['PREFIX'].'_hostname'], $ip, $serviceInfo[$settings['PREFIX'].'_custid']);
+                myadmin_log('dns', $result['status'] === 'success' ? 'debug' : 'warning', "add_dns_domain({$serviceInfo[$settings['PREFIX'].'_hostname']}, $ip, {$serviceInfo[$settings['PREFIX'].'_custid']}) = " . json_encode($result), __LINE__, __FILE__, self::$module, $serviceInfo[$settings['PREFIX'].'_id']);
             })->setReactivate(function ($service) {
                 $serviceInfo = $service->getServiceInfo();
                 $settings = get_module_settings(self::$module);
